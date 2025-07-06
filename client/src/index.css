@@ -1,0 +1,131 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: hsl(248, 50%, 98%);
+  --foreground: hsl(215, 27%, 15%);
+  --muted: hsl(210, 40%, 96%);
+  --muted-foreground: hsl(215, 16%, 46%);
+  --popover: hsl(0, 0%, 100%);
+  --popover-foreground: hsl(215, 27%, 15%);
+  --card: hsl(0, 0%, 100%);
+  --card-foreground: hsl(215, 27%, 15%);
+  --border: hsl(214, 32%, 91%);
+  --input: hsl(214, 32%, 91%);
+  --primary: hsl(217, 78%, 33%);
+  --primary-foreground: hsl(210, 40%, 98%);
+  --secondary: hsl(159, 85%, 40%);
+  --secondary-foreground: hsl(0, 0%, 98%);
+  --accent: hsl(0, 71%, 51%);
+  --accent-foreground: hsl(210, 40%, 98%);
+  --destructive: hsl(0, 84%, 60%);
+  --destructive-foreground: hsl(210, 40%, 98%);
+  --ring: hsl(215, 27%, 15%);
+  --gold: hsl(38, 96%, 50%);
+  --radius: 0.5rem;
+}
+
+.dark {
+  --background: hsl(215, 28%, 8%);
+  --foreground: hsl(210, 40%, 98%);
+  --muted: hsl(217, 32%, 12%);
+  --muted-foreground: hsl(215, 20%, 65%);
+  --popover: hsl(215, 28%, 8%);
+  --popover-foreground: hsl(210, 40%, 98%);
+  --card: hsl(217, 32%, 10%);
+  --card-foreground: hsl(210, 40%, 98%);
+  --border: hsl(217, 32%, 17%);
+  --input: hsl(217, 32%, 17%);
+  --primary: hsl(217, 78%, 33%);
+  --primary-foreground: hsl(210, 40%, 98%);
+  --secondary: hsl(159, 85%, 40%);
+  --secondary-foreground: hsl(0, 0%, 98%);
+  --accent: hsl(0, 71%, 51%);
+  --accent-foreground: hsl(210, 40%, 98%);
+  --destructive: hsl(0, 62%, 30%);
+  --destructive-foreground: hsl(210, 40%, 98%);
+  --ring: hsl(215, 20%, 65%);
+  --gold: hsl(38, 96%, 50%);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+}
+
+/* Custom styles for Bloomberg Terminal aesthetic */
+.terminal-glow {
+  box-shadow: 0 0 20px rgba(30, 58, 138, 0.3);
+}
+
+.number-ball {
+  @apply w-12 h-12 rounded-full flex items-center justify-center font-mono font-bold text-lg;
+}
+
+.data-card {
+  @apply bg-card border border-border rounded-xl shadow-sm p-6;
+}
+
+.stat-highlight {
+  @apply font-mono font-bold text-lg;
+}
+
+/* Chart container styles */
+.chart-container {
+  @apply relative h-64 w-full;
+}
+
+/* Professional data table styles */
+.data-table {
+  @apply w-full border-collapse;
+}
+
+.data-table th {
+  @apply bg-muted text-muted-foreground font-medium text-sm p-3 text-left border-b;
+}
+
+.data-table td {
+  @apply p-3 border-b border-border text-sm;
+}
+
+/* Terminal-inspired typography */
+.terminal-font {
+  font-family: 'JetBrains Mono', 'Consolas', 'Monaco', monospace;
+}
+
+/* Gradient backgrounds for key metrics */
+.metric-gradient-primary {
+  background: linear-gradient(135deg, hsl(217, 78%, 33%) 0%, hsl(217, 78%, 40%) 100%);
+}
+
+.metric-gradient-secondary {
+  background: linear-gradient(135deg, hsl(159, 85%, 40%) 0%, hsl(159, 85%, 47%) 100%);
+}
+
+.metric-gradient-gold {
+  background: linear-gradient(135deg, hsl(38, 96%, 50%) 0%, hsl(38, 96%, 57%) 100%);
+}
+
+/* Custom scrollbar for dark theme */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  @apply bg-muted;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: hsl(var(--muted-foreground) / 0.3);
+  border-radius: 9999px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: hsl(var(--muted-foreground) / 0.5);
+}

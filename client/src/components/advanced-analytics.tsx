@@ -96,16 +96,6 @@ export function AdvancedAnalytics() {
             <div className="flex justify-between items-center">
               <span className="text-sm text-slate-600 dark:text-slate-400">High/Low Split</span>
               <span className="font-mono text-primary dark:text-primary">
-                {analysis?.patterns?.highLowSplit || 'N/A'}
-              </span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-slate-600 dark:text-slate-400">Sum Range</span>
-              <span className="font-mono text-primary dark:text-primary">
-                {analysis?.patterns?.sumRange || 'N/A'}
-              </span>
-            </div>
-              <span className="font-mono text-primary dark:text-primary">
                 {analysis?.patterns?.highLowSplit || '2:3'}
               </span>
             </div>

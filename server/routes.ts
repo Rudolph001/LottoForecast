@@ -158,13 +158,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Clean up uploaded file
       fs.unlinkSync(req.file.path);
       
-      // Update ML model with new training data
-      const activeModel = await storage.getActiveModel();
-      if (activeModel) {
-        const newTrainingData = activeModel.trainingData + recordsProcessed;
-        const newAccuracy = Math.min(98.5, 85 + (newTrainingData / 100) * 2); // Improved accuracy with more data
-        await storage.updateModelAccuracy(activeModel.id, newAccuracy);
-      }
+      // Model training data is automatically updated in createDraw method
       
       const result = {
         recordsProcessed,

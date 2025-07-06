@@ -47,63 +47,13 @@ export class MemStorage implements IStorage {
     // Initialize with a default active model
     this.createModel({
       version: "v2.4.1",
-      accuracy: 94.2,
-      trainingData: 1247,
+      accuracy: 75.0,
+      trainingData: 0,
       isActive: "true"
     });
-    
-    // Initialize with some sample historical data for demonstration
-    this.initializeSampleData();
   }
   
-  private async initializeSampleData() {
-    const sampleDraws = [
-      {
-        date: "2025-07-04",
-        drawNumber: 1851,
-        mainNumbers: [3, 16, 23, 38, 47],
-        luckyStars: [7, 11],
-        jackpotAmount: 64000000,
-        jackpotWon: "No"
-      },
-      {
-        date: "2025-06-29",
-        drawNumber: 1850,
-        mainNumbers: [8, 19, 27, 34, 42],
-        luckyStars: [2, 9],
-        jackpotAmount: 58000000,
-        jackpotWon: "No"
-      },
-      {
-        date: "2025-06-25",
-        drawNumber: 1849,
-        mainNumbers: [12, 21, 29, 35, 44],
-        luckyStars: [4, 8],
-        jackpotAmount: 52000000,
-        jackpotWon: "No"
-      },
-      {
-        date: "2025-06-20",
-        drawNumber: 1848,
-        mainNumbers: [5, 14, 28, 39, 46],
-        luckyStars: [1, 6],
-        jackpotAmount: 47000000,
-        jackpotWon: "No"
-      },
-      {
-        date: "2025-06-16",
-        drawNumber: 1847,
-        mainNumbers: [7, 18, 25, 31, 49],
-        luckyStars: [3, 10],
-        jackpotAmount: 41000000,
-        jackpotWon: "No"
-      }
-    ];
-    
-    for (const draw of sampleDraws) {
-      await this.createDraw(draw);
-    }
-  }
+  
 
   async createDraw(insertDraw: InsertDraw): Promise<Draw> {
     const id = this.currentDrawId++;
@@ -113,6 +63,20 @@ export class MemStorage implements IStorage {
       createdAt: new Date() 
     };
     this.draws.set(id, draw);
+    
+    // Update active model training data count
+    const activeModel = await this.getActiveModel();
+    if (activeModel) {
+      const totalDraws = this.draws.size;
+      const updatedModel = { 
+        ...activeModel, 
+        trainingData: totalDraws,
+        lastTrained: new Date(),
+        accuracy: Math.min(98.5, 85 + (totalDraws / 100) * 2)
+      };
+      this.models.set(activeModel.id, updatedModel);
+    }
+    
     return draw;
   }
 

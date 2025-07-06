@@ -15,9 +15,9 @@ interface UploadStats {
 export function DataUpload() {
   const [dragActive, setDragActive] = useState(false);
   const [uploadStats, setUploadStats] = useState<UploadStats>({
-    recordsProcessed: 1247,
-    lastUpload: '2 hours ago',
-    status: 'Active'
+    recordsProcessed: 0,
+    lastUpload: 'No uploads yet',
+    status: 'Ready'
   });
   const { toast } = useToast();
   const queryClient = useQueryClient();

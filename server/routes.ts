@@ -4,10 +4,14 @@ import { storage } from "./storage";
 import { insertDrawSchema, insertPredictionSchema } from "@shared/schema";
 import multer from "multer";
 import { z } from "zod";
+import { exchangeRateService } from "./exchange-rate-service";
 
 const upload = multer({ dest: 'uploads/' });
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  
+  // Start the exchange rate auto-update service
+  exchangeRateService.startAutoUpdate();
   
   // Get current jackpot info
   app.get("/api/jackpot", async (req, res) => {
@@ -28,13 +32,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get live EUR to ZAR exchange rate
   app.get("/api/exchange-rate", async (req, res) => {
     try {
-      // Mock exchange rate - in production, this would call a real API
-      const exchangeData = {
-        from: "EUR",
-        to: "ZAR",
-        rate: 21.01,
-        lastUpdated: new Date().toISOString()
-      };
+      const exchangeData = exchangeRateService.getCurrentRate();
       res.json(exchangeData);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch exchange rate" });

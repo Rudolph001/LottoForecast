@@ -13,7 +13,7 @@ export function CurrencyConverter() {
 
   const { data: exchangeRate } = useQuery({
     queryKey: ["/api/exchange-rate"],
-    refetchInterval: 60000,
+    refetchInterval: 30000, // Refetch every 30 seconds to get fresh data
   });
 
   useEffect(() => {

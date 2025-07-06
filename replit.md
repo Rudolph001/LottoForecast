@@ -96,7 +96,8 @@ This is a full-stack EuroMillions lottery prediction platform that leverages AI/
 - `REPL_ID`: Replit environment detection
 
 ## Changelog
-- July 06, 2025. Initial setup
+- January 06, 2025. Initial setup
+- January 06, 2025. Successfully migrated to Replit environment with automatic exchange rate updates every 5 minutes
 
 ## User Preferences
 

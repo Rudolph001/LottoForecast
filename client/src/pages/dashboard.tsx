@@ -9,6 +9,7 @@ import { AdvancedAnalytics } from "@/components/advanced-analytics";
 import { DataUpload } from "@/components/data-upload";
 import { CurrencyConverter } from "@/components/currency-converter";
 import { ModelDashboard } from "@/components/model-dashboard";
+import { BudgetDashboard } from "@/components/budget-dashboard";
 import { Sparkles, TrendingUp, Calculator, Upload } from "lucide-react";
 import { useLocation } from "wouter";
 import { useTheme } from "@/components/theme-provider";
@@ -31,6 +32,8 @@ export function Dashboard() {
       setActiveTab("analysis");
     } else if (location === "/converter") {
       setActiveTab("converter");
+    } else if (location === "/budget") {
+      setActiveTab("budget");
     }
   }, [location]);
 
@@ -96,6 +99,13 @@ export function Dashboard() {
                 >
                   <span>Converter</span>
                 </Button>
+                <Button
+                  variant={activeTab === "budget" ? "default" : "ghost"}
+                  onClick={() => handleTabChange("budget")}
+                  className="flex items-center space-x-2 px-6 py-2"
+                >
+                  <span>Budget</span>
+                </Button>
               </nav>
             <div className="flex items-center space-x-4">
               <Button
@@ -141,6 +151,7 @@ export function Dashboard() {
         {activeTab === "predictions" && <PredictionsPanel />}
         {activeTab === "analysis" && <AdvancedAnalytics />}
         {activeTab === "converter" && <CurrencyConverter />}
+        {activeTab === "budget" && <BudgetDashboard />}
 
       </main>
 

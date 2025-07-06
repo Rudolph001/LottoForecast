@@ -49,7 +49,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Read and parse the CSV file
-      const fs = require('fs');
+      const fs = await import('fs');
       const csvContent = fs.readFileSync(req.file.path, 'utf-8');
       const lines = csvContent.split('\n').filter(line => line.trim());
       

@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Dashboard } from "@/pages/dashboard";
 import { Route, Router, useLocation } from "wouter";
-import { NotFound } from "@/pages/not-found";
+import NotFound from "@/pages/not-found";
 import { useState } from "react";
 
 const queryClient = new QueryClient({

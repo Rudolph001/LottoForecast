@@ -97,10 +97,10 @@ export function BudgetDashboard() {
   const rate = parseFloat(interestRate) || 0;
 
   // Calculate allocations
-  const investmentAmount = (jackpotZAR * allocation.investecFixedDeposit) / 100;
-  const housesAmount = (jackpotZAR * allocation.houses) / 100;
-  const carsAmount = (jackpotZAR * allocation.cars) / 100;
-  const otherAmount = (jackpotZAR * allocation.otherExpenses) / 100;
+  const investmentAmount = (Number(jackpotZAR) * Number(allocation.investecFixedDeposit)) / 100;
+  const housesAmount = (Number(jackpotZAR) * Number(allocation.houses)) / 100;
+  const carsAmount = (Number(jackpotZAR) * Number(allocation.cars)) / 100;
+  const otherAmount = (Number(jackpotZAR) * Number(allocation.otherExpenses)) / 100;
 
   // Calculate tax on interest (South African tax rates 2024/25)
   const calculateTax = (): TaxCalculation => {
@@ -638,6 +638,37 @@ export function BudgetDashboard() {
             </Button>
           </div>
           
+          {/* Vehicle Budget Overview */}
+          <Card className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20 border-green-200 dark:border-green-800/20">
+            <CardContent className="p-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="text-center">
+                  <div className="text-sm text-slate-600 dark:text-slate-400">Total Car Budget</div>
+                  <div className="text-2xl font-bold text-green-600 dark:text-green-400">
+                    R{carsAmount.toLocaleString()}
+                  </div>
+                  <div className="text-xs text-slate-500">{allocation.cars}% of total budget</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-sm text-slate-600 dark:text-slate-400">Total Spent</div>
+                  <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                    R{vehicles.reduce((sum, v) => sum + (v.price || 0), 0).toLocaleString()}
+                  </div>
+                  <div className="text-xs text-slate-500">{vehicles.length} vehicle{vehicles.length !== 1 ? 's' : ''} added</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-sm text-slate-600 dark:text-slate-400">Remaining Budget</div>
+                  <div className={`text-2xl font-bold ${carsAmount - vehicles.reduce((sum, v) => sum + (v.price || 0), 0) >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                    R{Math.abs(carsAmount - vehicles.reduce((sum, v) => sum + (v.price || 0), 0)).toLocaleString()}
+                  </div>
+                  <div className={`text-xs ${carsAmount - vehicles.reduce((sum, v) => sum + (v.price || 0), 0) >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                    {carsAmount - vehicles.reduce((sum, v) => sum + (v.price || 0), 0) >= 0 ? 'Available' : 'Over Budget'}
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
           <div className="grid gap-6">
             {vehicles.length === 0 ? (
               <Card className="data-card">
@@ -760,9 +791,19 @@ export function BudgetDashboard() {
                       <div className="bg-gradient-to-br from-red-50 to-orange-50 dark:from-red-950/20 dark:to-orange-950/20 rounded-lg p-4 border border-red-100 dark:border-red-900/20">
                         <div className="flex items-center justify-between mb-3">
                           <h4 className="font-semibold text-red-700 dark:text-red-400 text-sm">Monthly Insurance</h4>
-                          <div className="text-xs text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/20 px-2 py-1 rounded">
-                            Auto-Calculated
-                          </div>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              const estimatedInsurance = estimateCarInsurance(vehicle.make, vehicle.model, vehicle.year, vehicle.price);
+                              setVehicles(prev => prev.map(v => 
+                                v.id === vehicle.id ? {...v, insurance: estimatedInsurance} : v
+                              ));
+                            }}
+                            className="text-xs text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/20 border-red-200 dark:border-red-800 hover:bg-red-200 dark:hover:bg-red-900/40"
+                          >
+                            Auto-Calculate
+                          </Button>
                         </div>
                         <div className="space-y-2">
                           <div className="relative">
@@ -802,9 +843,19 @@ export function BudgetDashboard() {
                       <div className="bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-950/20 dark:to-cyan-950/20 rounded-lg p-4 border border-blue-100 dark:border-blue-900/20">
                         <div className="flex items-center justify-between mb-3">
                           <h4 className="font-semibold text-blue-700 dark:text-blue-400 text-sm">Monthly Maintenance</h4>
-                          <div className="text-xs text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/20 px-2 py-1 rounded">
-                            Auto-Calculated
-                          </div>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              const estimatedMaintenance = estimateCarMaintenance(vehicle.make, vehicle.year, vehicle.price);
+                              setVehicles(prev => prev.map(v => 
+                                v.id === vehicle.id ? {...v, maintenance: estimatedMaintenance} : v
+                              ));
+                            }}
+                            className="text-xs text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 hover:bg-blue-200 dark:hover:bg-blue-900/40"
+                          >
+                            Auto-Calculate
+                          </Button>
                         </div>
                         <div className="space-y-2">
                           <div className="relative">
@@ -843,7 +894,7 @@ export function BudgetDashboard() {
 
                     {/* Total Monthly Cost Summary */}
                     <div className="bg-gradient-to-r from-purple-100 to-violet-100 dark:from-purple-900/20 dark:to-violet-900/20 rounded-lg p-4 border border-purple-200 dark:border-purple-800/20">
-                      <div className="flex items-center justify-between">
+                      <div className="flex items-center justify-between mb-2">
                         <h4 className="font-semibold text-purple-700 dark:text-purple-400">Total Monthly Running Costs</h4>
                         <div className="text-right">
                           <div className="text-2xl font-bold text-purple-700 dark:text-purple-400">
@@ -852,6 +903,26 @@ export function BudgetDashboard() {
                           <div className="text-xs text-slate-600 dark:text-slate-400">
                             R{(((vehicle.insurance || 0) + (vehicle.maintenance || 0)) * 12).toLocaleString()} annually
                           </div>
+                        </div>
+                      </div>
+                      {/* Vehicle Cost vs Allocation */}
+                      <div className="border-t border-purple-200 dark:border-purple-800/20 pt-2 mt-2">
+                        <div className="flex justify-between text-sm">
+                          <span className="text-slate-600 dark:text-slate-400">Vehicle Purchase Price:</span>
+                          <span className="font-semibold">R{(vehicle.price || 0).toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-slate-600 dark:text-slate-400">Total Car Budget Allocated:</span>
+                          <span className="font-semibold">R{carsAmount.toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between text-sm font-semibold">
+                          <span className={`${carsAmount - (vehicles.reduce((sum, v) => sum + (v.price || 0), 0)) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                            Remaining Budget:
+                          </span>
+                          <span className={`${carsAmount - (vehicles.reduce((sum, v) => sum + (v.price || 0), 0)) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                            R{Math.abs(carsAmount - (vehicles.reduce((sum, v) => sum + (v.price || 0), 0))).toLocaleString()}
+                            {carsAmount - (vehicles.reduce((sum, v) => sum + (v.price || 0), 0)) < 0 ? ' over budget' : ' available'}
+                          </span>
                         </div>
                       </div>
                     </div>

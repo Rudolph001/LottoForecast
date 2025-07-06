@@ -649,114 +649,211 @@ export function BudgetDashboard() {
               </Card>
             ) : (
               vehicles.map((vehicle) => (
-                <Card key={vehicle.id} className="data-card">
+                <Card key={vehicle.id} className="data-card bg-gradient-to-br from-purple-50/50 to-violet-50/50 dark:from-purple-950/10 dark:to-violet-950/10">
                   <CardHeader>
                     <CardTitle className="flex items-center justify-between">
-                      <span className="flex items-center gap-2">
-                        <Car className="w-5 h-5" />
-                        Vehicle Details
+                      <span className="flex items-center gap-3">
+                        <div className="p-2 rounded-lg bg-purple-100 dark:bg-purple-900/20">
+                          <Car className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-lg">
+                            {vehicle.make && vehicle.model ? `${vehicle.make} ${vehicle.model}` : 'Vehicle Details'}
+                          </h3>
+                          {vehicle.year && (
+                            <p className="text-sm text-slate-600 dark:text-slate-400">{vehicle.year} Model</p>
+                          )}
+                        </div>
                       </span>
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => setVehicles(prev => prev.filter(v => v.id !== vehicle.id))}
+                        className="text-slate-400 hover:text-red-500"
                       >
                         <Trash2 className="w-4 h-4" />
                       </Button>
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <div>
-                      <Label>Make</Label>
-                      <Input
-                        placeholder="e.g., BMW, Mercedes"
-                        value={vehicle.make}
-                        onChange={(e) => 
-                          setVehicles(prev => prev.map(v => 
-                            v.id === vehicle.id ? {...v, make: e.target.value} : v
-                          ))
-                        }
-                      />
+                  <CardContent className="space-y-6">
+                    {/* Vehicle Basic Info */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div>
+                        <Label className="text-sm font-medium text-slate-700 dark:text-slate-300">Make</Label>
+                        <Input
+                          placeholder="Ferrari"
+                          value={vehicle.make}
+                          onChange={(e) => 
+                            setVehicles(prev => prev.map(v => 
+                              v.id === vehicle.id ? {...v, make: e.target.value} : v
+                            ))
+                          }
+                          className="mt-1"
+                        />
+                      </div>
+
+                      <div>
+                        <Label className="text-sm font-medium text-slate-700 dark:text-slate-300">Model</Label>
+                        <Input
+                          placeholder="SF90"
+                          value={vehicle.model}
+                          onChange={(e) => 
+                            setVehicles(prev => prev.map(v => 
+                              v.id === vehicle.id ? {...v, model: e.target.value} : v
+                            ))
+                          }
+                          className="mt-1"
+                        />
+                      </div>
+
+                      <div>
+                        <Label className="text-sm font-medium text-slate-700 dark:text-slate-300">Year</Label>
+                        <Input
+                          type="number"
+                          min="2000"
+                          max={new Date().getFullYear() + 1}
+                          placeholder="2022"
+                          value={vehicle.year || ''}
+                          onChange={(e) => 
+                            setVehicles(prev => prev.map(v => 
+                              v.id === vehicle.id ? {...v, year: parseInt(e.target.value) || new Date().getFullYear()} : v
+                            ))
+                          }
+                          className="mt-1"
+                        />
+                      </div>
                     </div>
 
+                    {/* Purchase Price */}
                     <div>
-                      <Label>Model</Label>
-                      <Input
-                        placeholder="e.g., X5, C-Class"
-                        value={vehicle.model}
-                        onChange={(e) => 
-                          setVehicles(prev => prev.map(v => 
-                            v.id === vehicle.id ? {...v, model: e.target.value} : v
-                          ))
-                        }
-                      />
+                      <Label className="text-sm font-medium text-slate-700 dark:text-slate-300">Purchase Price</Label>
+                      <div className="mt-1 relative">
+                        <Input
+                          type="number"
+                          placeholder="13999995"
+                          value={vehicle.price || ''}
+                          onChange={(e) => {
+                            const price = parseFloat(e.target.value) || 0;
+                            setVehicles(prev => prev.map(v => 
+                              v.id === vehicle.id ? {
+                                ...v, 
+                                price,
+                                insurance: estimateCarInsurance(vehicle.make, vehicle.model, vehicle.year, price),
+                                maintenance: estimateCarMaintenance(vehicle.make, vehicle.year, price)
+                              } : v
+                            ));
+                          }}
+                          className="pl-8 text-lg font-mono"
+                        />
+                        <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-500">R</span>
+                      </div>
+                      {vehicle.price > 0 && (
+                        <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
+                          R{vehicle.price.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                        </p>
+                      )}
                     </div>
 
-                    <div>
-                      <Label>Year</Label>
-                      <Input
-                        type="number"
-                        min="2000"
-                        max={new Date().getFullYear() + 1}
-                        value={vehicle.year || ''}
-                        onChange={(e) => 
-                          setVehicles(prev => prev.map(v => 
-                            v.id === vehicle.id ? {...v, year: parseInt(e.target.value) || new Date().getFullYear()} : v
-                          ))
-                        }
-                      />
+                    {/* Financial Summary Cards */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {/* Insurance Card */}
+                      <div className="bg-gradient-to-br from-red-50 to-orange-50 dark:from-red-950/20 dark:to-orange-950/20 rounded-lg p-4 border border-red-100 dark:border-red-900/20">
+                        <div className="flex items-center justify-between mb-3">
+                          <h4 className="font-semibold text-red-700 dark:text-red-400 text-sm">Monthly Insurance</h4>
+                          <div className="text-xs text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/20 px-2 py-1 rounded">
+                            Auto-Calculated
+                          </div>
+                        </div>
+                        <div className="space-y-2">
+                          <div className="relative">
+                            <Input
+                              type="number"
+                              value={vehicle.insurance || ''}
+                              onChange={(e) => 
+                                setVehicles(prev => prev.map(v => 
+                                  v.id === vehicle.id ? {...v, insurance: parseFloat(e.target.value) || 0} : v
+                                ))
+                              }
+                              className="pl-8 font-mono text-lg border-red-200 dark:border-red-800"
+                            />
+                            <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-500">R</span>
+                          </div>
+                          <div className="text-xs space-y-1">
+                            <div className="flex justify-between">
+                              <span className="text-slate-600 dark:text-slate-400">Estimated:</span>
+                              <span className="font-semibold text-red-600 dark:text-red-400">
+                                R{estimateCarInsurance(vehicle.make, vehicle.model, vehicle.year, vehicle.price).toLocaleString()}
+                              </span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-slate-600 dark:text-slate-400">Annual:</span>
+                              <span className="font-medium">
+                                R{((vehicle.insurance || estimateCarInsurance(vehicle.make, vehicle.model, vehicle.year, vehicle.price)) * 12).toLocaleString()}
+                              </span>
+                            </div>
+                            <div className="text-xs text-slate-500 dark:text-slate-400 mt-2 p-2 bg-white/50 dark:bg-black/20 rounded">
+                              Based on {vehicle.make || 'vehicle'} {vehicle.model || 'type'}, {new Date().getFullYear() - (vehicle.year || new Date().getFullYear())} years old
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Maintenance Card */}
+                      <div className="bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-950/20 dark:to-cyan-950/20 rounded-lg p-4 border border-blue-100 dark:border-blue-900/20">
+                        <div className="flex items-center justify-between mb-3">
+                          <h4 className="font-semibold text-blue-700 dark:text-blue-400 text-sm">Monthly Maintenance</h4>
+                          <div className="text-xs text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/20 px-2 py-1 rounded">
+                            Auto-Calculated
+                          </div>
+                        </div>
+                        <div className="space-y-2">
+                          <div className="relative">
+                            <Input
+                              type="number"
+                              value={vehicle.maintenance || ''}
+                              onChange={(e) => 
+                                setVehicles(prev => prev.map(v => 
+                                  v.id === vehicle.id ? {...v, maintenance: parseFloat(e.target.value) || 0} : v
+                                ))
+                              }
+                              className="pl-8 font-mono text-lg border-blue-200 dark:border-blue-800"
+                            />
+                            <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-500">R</span>
+                          </div>
+                          <div className="text-xs space-y-1">
+                            <div className="flex justify-between">
+                              <span className="text-slate-600 dark:text-slate-400">Estimated:</span>
+                              <span className="font-semibold text-blue-600 dark:text-blue-400">
+                                R{estimateCarMaintenance(vehicle.make, vehicle.year, vehicle.price).toLocaleString()}
+                              </span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-slate-600 dark:text-slate-400">Annual:</span>
+                              <span className="font-medium">
+                                R{((vehicle.maintenance || estimateCarMaintenance(vehicle.make, vehicle.year, vehicle.price)) * 12).toLocaleString()}
+                              </span>
+                            </div>
+                            <div className="text-xs text-slate-500 dark:text-slate-400 mt-2 p-2 bg-white/50 dark:bg-black/20 rounded">
+                              Includes service, parts, wear items for {vehicle.year || 'current'} model
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
 
-                    <div>
-                      <Label>Purchase Price (R)</Label>
-                      <Input
-                        type="number"
-                        placeholder="850000"
-                        value={vehicle.price || ''}
-                        onChange={(e) => {
-                          const price = parseFloat(e.target.value) || 0;
-                          setVehicles(prev => prev.map(v => 
-                            v.id === vehicle.id ? {
-                              ...v, 
-                              price,
-                              insurance: estimateCarInsurance(vehicle.make, vehicle.model, vehicle.year, price),
-                              maintenance: estimateCarMaintenance(vehicle.make, vehicle.year, price)
-                            } : v
-                          ));
-                        }}
-                      />
-                    </div>
-
-                    <div>
-                      <Label>Insurance (Monthly)</Label>
-                      <Input
-                        type="number"
-                        value={vehicle.insurance || ''}
-                        onChange={(e) => 
-                          setVehicles(prev => prev.map(v => 
-                            v.id === vehicle.id ? {...v, insurance: parseFloat(e.target.value) || 0} : v
-                          ))
-                        }
-                      />
-                      <p className="text-xs text-slate-500 mt-1">
-                        Estimated: R{estimateCarInsurance(vehicle.make, vehicle.model, vehicle.year, vehicle.price).toLocaleString()}
-                      </p>
-                    </div>
-
-                    <div>
-                      <Label>Maintenance (Monthly)</Label>
-                      <Input
-                        type="number"
-                        value={vehicle.maintenance || ''}
-                        onChange={(e) => 
-                          setVehicles(prev => prev.map(v => 
-                            v.id === vehicle.id ? {...v, maintenance: parseFloat(e.target.value) || 0} : v
-                          ))
-                        }
-                      />
-                      <p className="text-xs text-slate-500 mt-1">
-                        Estimated: R{estimateCarMaintenance(vehicle.make, vehicle.year, vehicle.price).toLocaleString()}
-                      </p>
+                    {/* Total Monthly Cost Summary */}
+                    <div className="bg-gradient-to-r from-purple-100 to-violet-100 dark:from-purple-900/20 dark:to-violet-900/20 rounded-lg p-4 border border-purple-200 dark:border-purple-800/20">
+                      <div className="flex items-center justify-between">
+                        <h4 className="font-semibold text-purple-700 dark:text-purple-400">Total Monthly Running Costs</h4>
+                        <div className="text-right">
+                          <div className="text-2xl font-bold text-purple-700 dark:text-purple-400">
+                            R{((vehicle.insurance || 0) + (vehicle.maintenance || 0)).toLocaleString()}
+                          </div>
+                          <div className="text-xs text-slate-600 dark:text-slate-400">
+                            R{(((vehicle.insurance || 0) + (vehicle.maintenance || 0)) * 12).toLocaleString()} annually
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>

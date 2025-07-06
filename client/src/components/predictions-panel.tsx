@@ -142,37 +142,41 @@ export function PredictionsPanel() {
             </div>
           </div>
 
-          <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-4">
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div className="flex justify-between">
-                <span className="text-slate-600 dark:text-slate-400">Confidence Score:</span>
-                <span className="font-semibold text-secondary">
-                  {prediction?.confidenceScore?.toFixed(0) || 87}%
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-slate-600 dark:text-slate-400">Model Used:</span>
-                <span className="font-mono text-primary dark:text-primary">
-                  {prediction?.modelVersion || 'Neural Net v2.4'}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-slate-600 dark:text-slate-400">Pattern Match:</span>
-                <span className="font-semibold text-gold">
-                  {prediction?.patternMatch || 'High'}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-slate-600 dark:text-slate-400">Generated:</span>
-                <span className="text-slate-500 dark:text-slate-400">
-                  {prediction?.createdAt ? 
-                    new Date(prediction.createdAt).toLocaleTimeString() : 
-                    '3 min ago'
-                  }
-                </span>
+          {prediction ? (
+            <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-4">
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-slate-600 dark:text-slate-400">Confidence Score:</span>
+                  <span className="font-semibold text-secondary">
+                    {prediction.confidenceScore.toFixed(0)}%
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-600 dark:text-slate-400">Model Used:</span>
+                  <span className="font-mono text-primary dark:text-primary">
+                    {prediction.modelVersion}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-600 dark:text-slate-400">Pattern Match:</span>
+                  <span className="font-semibold text-gold">
+                    {prediction.patternMatch}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-600 dark:text-slate-400">Generated:</span>
+                  <span className="text-slate-500 dark:text-slate-400">
+                    {new Date(prediction.createdAt).toLocaleTimeString()}
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
+          ) : (
+            <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-4 text-center text-slate-500 dark:text-slate-400">
+              <p>No predictions generated yet</p>
+              <p className="text-sm">Upload historical data and generate predictions</p>
+            </div>
+          )}
         </CardContent>
       </Card>
 

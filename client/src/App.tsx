@@ -26,6 +26,7 @@ function App() {
           <Route path="/predictions" component={Dashboard} />
           <Route path="/analysis" component={Dashboard} />
           <Route path="/converter" component={Dashboard} />
+          <Route path="/budget" component={Dashboard} />
           <Route component={NotFound} />
         </Router>
         <Toaster />

@@ -207,15 +207,15 @@ export function PredictionsPanel() {
               Lucky Stars (2 of 12)
             </h4>
             <div className="flex space-x-3 justify-center">
-              {prediction?.luckyStars ? prediction.luckyStars.map((star: number, index: number) => (
+              {prediction?.luckyStars && prediction.luckyStars.length > 0 ? prediction.luckyStars.map((star: number, index: number) => (
                 <div 
                   key={index}
-                  className="number-ball bg-yellow-200 text-black border-2 border-yellow-400"
+                  className="w-12 h-12 bg-gradient-to-br from-yellow-400 to-yellow-600 text-white rounded-full flex items-center justify-center font-bold text-lg border-2 border-yellow-300 shadow-lg"
                 >
                   {star}
                 </div>
               )) : (
-                <div className="text-center text-slate-500">
+                <div className="text-center text-slate-500 dark:text-slate-400">
                   No lucky stars generated yet. Click "Generate New" to create predictions.
                 </div>
               )}

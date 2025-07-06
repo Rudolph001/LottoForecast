@@ -97,7 +97,9 @@ This is a full-stack EuroMillions lottery prediction platform that leverages AI/
 
 ## Recent Changes
 - January 06, 2025: Migrated project to Replit environment
-- January 06, 2025: Implemented automatic exchange rate updates every 5 minutes
+- January 06, 2025: Updated exchange rate auto-updates to every 2 minutes (was 5 minutes)
+- January 06, 2025: Fixed React Query configuration issues - all dashboard components now display real data
+- January 06, 2025: Resolved database connection problems using neon-http driver
 - January 06, 2025: Fixed all components to use only real uploaded data (no mock/placeholder data)
 - January 06, 2025: Added proper "no data" states when CSV data hasn't been uploaded
 - January 06, 2025: Exchange rate now fetches live data from exchangerate-api.com

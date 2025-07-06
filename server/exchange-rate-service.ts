@@ -61,12 +61,12 @@ class ExchangeRateService {
     // Initial update
     this.updateRate();
 
-    // Update every 5 minutes (300,000 milliseconds)
+    // Update every 2 minutes (120,000 milliseconds)
     this.updateInterval = setInterval(() => {
       this.updateRate();
-    }, 5 * 60 * 1000);
+    }, 2 * 60 * 1000);
 
-    console.log('[exchange-rate] Auto-update started - will update every 5 minutes');
+    console.log('[exchange-rate] Auto-update started - will update every 2 minutes');
   }
 
   stopAutoUpdate(): void {

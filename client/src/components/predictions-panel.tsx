@@ -89,9 +89,14 @@ export function PredictionsPanel() {
       {/* Predictions */}
       <Card className="data-card">
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="text-lg font-semibold text-primary dark:text-primary">
-            Next Draw Predictions
-          </CardTitle>
+          <div>
+            <CardTitle className="text-lg font-semibold text-primary dark:text-primary">
+              Next Draw Predictions
+            </CardTitle>
+            <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+              Friday, July 11, 2025 at 21:05 CET
+            </p>
+          </div>
           <Button 
             onClick={() => generateMutation.mutate()}
             disabled={generateMutation.isPending}

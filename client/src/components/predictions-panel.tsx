@@ -16,6 +16,58 @@ import {
   Cell
 } from "recharts";
 
+// Function to calculate next EuroMillions draw date (Tuesday or Friday)
+function getNextDrawDate(): string {
+  const now = new Date();
+  const currentDay = now.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+  
+  let nextDraw = new Date(now);
+  
+  if (currentDay === 0) { // Sunday
+    nextDraw.setDate(now.getDate() + 2); // Tuesday
+  } else if (currentDay === 1) { // Monday
+    nextDraw.setDate(now.getDate() + 1); // Tuesday
+  } else if (currentDay === 2) { // Tuesday
+    // If it's Tuesday and before 21:05, next draw is today, otherwise Friday
+    if (now.getHours() < 21 || (now.getHours() === 21 && now.getMinutes() < 5)) {
+      // Next draw is today (Tuesday)
+      return "Tuesday, " + nextDraw.toLocaleDateString('en-US', { 
+        month: 'long', 
+        day: 'numeric', 
+        year: 'numeric' 
+      }) + " at 21:05 CET";
+    } else {
+      nextDraw.setDate(now.getDate() + 3); // Friday
+    }
+  } else if (currentDay === 3) { // Wednesday
+    nextDraw.setDate(now.getDate() + 2); // Friday
+  } else if (currentDay === 4) { // Thursday
+    nextDraw.setDate(now.getDate() + 1); // Friday
+  } else if (currentDay === 5) { // Friday
+    // If it's Friday and before 21:05, next draw is today, otherwise Tuesday
+    if (now.getHours() < 21 || (now.getHours() === 21 && now.getMinutes() < 5)) {
+      // Next draw is today (Friday)
+      return "Friday, " + nextDraw.toLocaleDateString('en-US', { 
+        month: 'long', 
+        day: 'numeric', 
+        year: 'numeric' 
+      }) + " at 21:05 CET";
+    } else {
+      nextDraw.setDate(now.getDate() + 4); // Tuesday
+    }
+  } else if (currentDay === 6) { // Saturday
+    nextDraw.setDate(now.getDate() + 3); // Tuesday
+  }
+  
+  const dayName = nextDraw.getDay() === 2 ? "Tuesday" : "Friday";
+  
+  return dayName + ", " + nextDraw.toLocaleDateString('en-US', { 
+    month: 'long', 
+    day: 'numeric', 
+    year: 'numeric' 
+  }) + " at 21:05 CET";
+}
+
 export function PredictionsPanel() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -94,7 +146,7 @@ export function PredictionsPanel() {
               Next Draw Predictions
             </CardTitle>
             <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
-              Friday, July 11, 2025 at 21:05 CET
+              {getNextDrawDate()}
             </p>
           </div>
           <Button 

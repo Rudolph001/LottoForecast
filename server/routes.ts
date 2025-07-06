@@ -16,11 +16,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get current jackpot info
   app.get("/api/jackpot", async (req, res) => {
     try {
-      // Return current jackpot data based on web search results - €74 million as of July 2025
+      // Calculate next draw date (Tuesday or Friday at 21:05 CET)
+      const now = new Date();
+      const currentDay = now.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+      
+      let nextDraw = new Date(now);
+      
+      if (currentDay === 0) { // Sunday
+        nextDraw.setDate(now.getDate() + 2); // Tuesday
+      } else if (currentDay === 1) { // Monday
+        nextDraw.setDate(now.getDate() + 1); // Tuesday
+      } else if (currentDay === 2) { // Tuesday
+        // If it's Tuesday and before 21:05, next draw is today, otherwise Friday
+        if (now.getHours() < 21 || (now.getHours() === 21 && now.getMinutes() < 5)) {
+          // Next draw is today (Tuesday)
+        } else {
+          nextDraw.setDate(now.getDate() + 3); // Friday
+        }
+      } else if (currentDay === 3) { // Wednesday
+        nextDraw.setDate(now.getDate() + 2); // Friday
+      } else if (currentDay === 4) { // Thursday
+        nextDraw.setDate(now.getDate() + 1); // Friday
+      } else if (currentDay === 5) { // Friday
+        // If it's Friday and before 21:05, next draw is today, otherwise Tuesday
+        if (now.getHours() < 21 || (now.getHours() === 21 && now.getMinutes() < 5)) {
+          // Next draw is today (Friday)
+        } else {
+          nextDraw.setDate(now.getDate() + 4); // Tuesday
+        }
+      } else if (currentDay === 6) { // Saturday
+        nextDraw.setDate(now.getDate() + 3); // Tuesday
+      }
+      
+      // Set the draw time to 21:05 CET
+      nextDraw.setHours(21, 5, 0, 0);
+      
       const jackpotData = {
         amount: 74000000, // €74 million confirmed from search results
         currency: "EUR",
-        nextDrawDate: "2025-07-11T21:05:00.000Z", // Next Friday draw
+        nextDrawDate: nextDraw.toISOString(),
         drawNumber: 1852
       };
       res.json(jackpotData);

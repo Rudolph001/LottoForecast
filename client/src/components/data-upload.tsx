@@ -49,8 +49,12 @@ export function DataUpload() {
       queryClient.invalidateQueries({ queryKey: ['/api/model/performance'] });
       queryClient.invalidateQueries({ queryKey: ['/api/predictions/latest'] });
       queryClient.invalidateQueries({ queryKey: ['/api/predictions'] });
-      // Force a complete refresh of all data
-      queryClient.refetchQueries();
+      // Clear all cache and force refetch
+      queryClient.clear();
+      // Force page reload to ensure fresh data
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
       queryClient.invalidateQueries({ queryKey: ['/api/predictions'] });
     },
     onError: () => {

@@ -127,15 +127,19 @@ export function PredictionsPanel() {
               Lucky Stars (2 of 12)
             </h4>
             <div className="flex space-x-3 justify-center">
-              {(prediction?.luckyStars || [4, 9]).map((star: number, index: number) => (
+              {prediction?.luckyStars ? prediction.luckyStars.map((star: number, index: number) => (
                 <div 
                   key={index}
-                  className="number-ball bg-gold text-white relative"
+                  className="number-ball bg-gold text-white relative flex items-center justify-center"
                 >
-                  <span>{star}</span>
+                  <span className="text-lg font-bold z-10">{star}</span>
                   <Star className="w-4 h-4 absolute -top-1 -right-1 text-yellow-300 fill-current" />
                 </div>
-              ))}
+              )) : (
+                <div className="text-center text-slate-500">
+                  No lucky stars generated yet. Click "Generate New" to create predictions.
+                </div>
+              )}
             </div>
           </div>
 

@@ -9,7 +9,8 @@ import {
   Car, 
   TrendingUp, 
   Banknote,
-  ShoppingBag
+  ShoppingBag,
+  Wallet
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 
@@ -165,7 +166,7 @@ export function BudgetDashboard() {
       </Card>
 
       {/* Individual Budget Categories */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-5 gap-6">
         {/* Fixed Deposit Card */}
         <Card className="data-card bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20">
           <CardHeader className="pb-3">
@@ -209,6 +210,50 @@ export function BudgetDashboard() {
                 <span className="text-slate-600 dark:text-slate-400">After Tax:</span>
                 <span className="font-semibold text-green-600">R{taxCalc.netMonthlyIncome.toLocaleString(undefined, { maximumFractionDigits: 0 })}</span>
               </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Main Account Card */}
+        <Card className="data-card bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-indigo-950/20 dark:to-blue-950/20">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg font-semibold text-indigo-700 dark:text-indigo-400 flex items-center">
+              <Wallet className="w-5 h-5 mr-2" />
+              Main Account
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="bg-white/50 dark:bg-black/20 rounded-lg p-3">
+              <div className="text-2xl font-bold text-indigo-700 dark:text-indigo-400">
+                R{taxCalc.netMonthlyIncome.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+              </div>
+              <div className="text-xs text-slate-600 dark:text-slate-400">
+                Net monthly income
+              </div>
+            </div>
+            
+            <div className="text-xs space-y-1">
+              <div className="flex justify-between">
+                <span className="text-slate-600 dark:text-slate-400">Gross Monthly:</span>
+                <span className="font-semibold">R{taxCalc.monthlyInterest.toLocaleString(undefined, { maximumFractionDigits: 0 })}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-600 dark:text-slate-400">Monthly Tax:</span>
+                <span className="font-semibold text-red-600">-R{(taxCalc.taxOwed / 12).toLocaleString(undefined, { maximumFractionDigits: 0 })}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-600 dark:text-slate-400">Annual Income:</span>
+                <span className="font-semibold">R{(taxCalc.netMonthlyIncome * 12).toLocaleString(undefined, { maximumFractionDigits: 0 })}</span>
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="account-details" className="text-xs">Account Details</Label>
+              <Input
+                id="account-details"
+                placeholder="e.g., Main spending account"
+                className="text-xs"
+              />
             </div>
           </CardContent>
         </Card>

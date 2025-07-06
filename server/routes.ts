@@ -80,6 +80,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "No file uploaded" });
       }
 
+      // Clear all existing data before uploading new CSV
+      await storage.clearAllData();
+
       // Read and parse the CSV file
       const fs = await import('fs');
       const csvContent = fs.readFileSync(req.file.path, 'utf-8');

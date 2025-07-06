@@ -89,4 +89,19 @@ export class DatabaseStorage implements IStorage {
   async getAllModels(): Promise<MLModel[]> {
     return await this.db.select().from(mlModels).orderBy(desc(mlModels.lastTrained));
   }
+
+  async clearAllData(): Promise<void> {
+    // Delete all data from tables
+    await this.db.delete(euroMillionsDraws);
+    await this.db.delete(predictions);
+    await this.db.delete(mlModels);
+    
+    // Create a default active model
+    await this.db.insert(mlModels).values({
+      version: "v2.4.1",
+      accuracy: 75.0,
+      trainingData: 0,
+      isActive: "true"
+    });
+  }
 }

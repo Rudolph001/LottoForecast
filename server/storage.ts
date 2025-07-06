@@ -26,6 +26,9 @@ export interface IStorage {
   getActiveModel(): Promise<MLModel | undefined>;
   updateModelAccuracy(id: number, accuracy: number): Promise<MLModel>;
   getAllModels(): Promise<MLModel[]>;
+  
+  // Data management
+  clearAllData(): Promise<void>;
 }
 
 export class MemStorage implements IStorage {
@@ -148,6 +151,23 @@ export class MemStorage implements IStorage {
     return Array.from(this.models.values()).sort((a, b) => 
       b.lastTrained.getTime() - a.lastTrained.getTime()
     );
+  }
+
+  async clearAllData(): Promise<void> {
+    this.draws.clear();
+    this.predictionsList.clear();
+    this.models.clear();
+    this.currentDrawId = 1;
+    this.currentPredictionId = 1;
+    this.currentModelId = 1;
+    
+    // Reinitialize with a default active model
+    await this.createModel({
+      version: "v2.4.1",
+      accuracy: 75.0,
+      trainingData: 0,
+      isActive: "true"
+    });
   }
 }
 

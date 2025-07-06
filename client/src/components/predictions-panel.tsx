@@ -130,10 +130,9 @@ export function PredictionsPanel() {
               {prediction?.luckyStars ? prediction.luckyStars.map((star: number, index: number) => (
                 <div 
                   key={index}
-                  className="number-ball bg-gold text-white relative flex items-center justify-center"
+                  className="number-ball bg-yellow-200 text-black border-2 border-yellow-400"
                 >
-                  <span className="text-lg font-bold z-10">{star}</span>
-                  <Star className="w-4 h-4 absolute -top-1 -right-1 text-yellow-300 fill-current" />
+                  {star}
                 </div>
               )) : (
                 <div className="text-center text-slate-500">

@@ -8,6 +8,7 @@ import { PredictionsPanel } from "@/components/predictions-panel";
 import { AdvancedAnalytics } from "@/components/advanced-analytics";
 import { DataUpload } from "@/components/data-upload";
 import { CurrencyConverter } from "@/components/currency-converter";
+import { ModelDashboard } from "@/components/model-dashboard";
 import { Sparkles, TrendingUp, Calculator, Upload } from "lucide-react";
 import { useLocation } from "wouter";
 import { useTheme } from "@/components/theme-provider";
@@ -22,6 +23,8 @@ export function Dashboard() {
   useEffect(() => {
     if (location === "/" || location === "/dashboard") {
       setActiveTab("dashboard");
+    } else if (location === "/model") {
+      setActiveTab("model");
     } else if (location === "/predictions") {
       setActiveTab("predictions");
     } else if (location === "/analysis") {
@@ -63,7 +66,14 @@ export function Dashboard() {
                   onClick={() => handleTabChange("dashboard")}
                   className="flex items-center space-x-2 px-6 py-2"
                 >
-                  <span>Dashboard</span>
+                  <span>Overview</span>
+                </Button>
+                <Button
+                  variant={activeTab === "model" ? "default" : "ghost"}
+                  onClick={() => handleTabChange("model")}
+                  className="flex items-center space-x-2 px-6 py-2"
+                >
+                  <span>Model Dashboard</span>
                 </Button>
                 <Button
                   variant={activeTab === "predictions" ? "default" : "ghost"}
@@ -107,21 +117,30 @@ export function Dashboard() {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-        {/* Current Jackpot Banner */}
-        <JackpotBanner />
+        {activeTab === "dashboard" && (
+          <>
+            {/* Current Jackpot Banner */}
+            <JackpotBanner />
 
-        {/* Main Dashboard Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-          <DataUpload />
-          <CurrencyConverter />
-          <QuickStats />
-        </div>
+            {/* Main Dashboard Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+              <DataUpload />
+              <CurrencyConverter />
+              <QuickStats />
+            </div>
 
-        {/* Predictions Section */}
-        <PredictionsPanel />
+            {/* Predictions Section */}
+            <PredictionsPanel />
 
-        {/* Advanced Analytics */}
-        <AdvancedAnalytics />
+            {/* Advanced Analytics */}
+            <AdvancedAnalytics />
+          </>
+        )}
+
+        {activeTab === "model" && <ModelDashboard />}
+        {activeTab === "predictions" && <PredictionsPanel />}
+        {activeTab === "analysis" && <AdvancedAnalytics />}
+        {activeTab === "converter" && <CurrencyConverter />}
 
       </main>
 

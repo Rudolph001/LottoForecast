@@ -109,17 +109,18 @@ export function PredictionsPanel() {
               Main Numbers (5 of 50)
             </h4>
             <div className="flex space-x-3 justify-center">
-              {(prediction?.mainNumbers || [7, 19, 23, 34, 47]).map((number: number, index: number) => (
-                <div 
-                  key={index}
-                  className="number-ball bg-primary text-white dark:bg-primary dark:text-white"
-                >
+              {prediction?.mainNumbers ? prediction.mainNumbers.map((number: number, index: number) => (
+                <div key={index} className="number-ball bg-primary text-white dark:bg-primary dark:text-white">
                   {number}
                 </div>
-              ))}
+              )) : (
+                <div className="text-center text-slate-500">
+                  No predictions available. Generate predictions after uploading data.
+                </div>
+              )}
             </div>
           </div>
-          
+
           {/* Lucky Stars */}
           <div>
             <h4 className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-3">
@@ -137,7 +138,7 @@ export function PredictionsPanel() {
               ))}
             </div>
           </div>
-          
+
           <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-4">
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div className="flex justify-between">
@@ -182,7 +183,7 @@ export function PredictionsPanel() {
         <CardContent>
           {analysisLoading ? (
             <Skeleton className="h-64 w-full" />
-          ) : (
+          ) : analysis ? (
             <>
               <div className="h-64 w-full">
                 <ResponsiveContainer width="100%" height="100%">
@@ -207,24 +208,28 @@ export function PredictionsPanel() {
               <div className="mt-4 grid grid-cols-3 gap-4 text-center text-sm">
                 <div>
                   <div className="font-bold text-primary dark:text-primary">
-                    {analysis?.mostFrequent || 23}
+                    {analysis.mostFrequent}
                   </div>
                   <div className="text-slate-600 dark:text-slate-400">Most Frequent</div>
                 </div>
                 <div>
                   <div className="font-bold text-accent">
-                    {analysis?.leastFrequent || 11}
+                    {analysis.leastFrequent}
                   </div>
                   <div className="text-slate-600 dark:text-slate-400">Least Frequent</div>
                 </div>
                 <div>
                   <div className="font-bold text-secondary">
-                    {analysis?.trending || 34}
+                    {analysis.trending}
                   </div>
                   <div className="text-slate-600 dark:text-slate-400">Trending Up</div>
                 </div>
               </div>
             </>
+          ) : (
+            <div className="text-center text-slate-500 py-8">
+              No frequency analysis available. Please upload historical CSV data first.
+            </div>
           )}
         </CardContent>
       </Card>

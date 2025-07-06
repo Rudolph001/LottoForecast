@@ -27,7 +27,7 @@ export function QuickStats() {
     );
   }
 
-  if (!performance) {
+  if (!performance || performance.trainingData === 0) {
     return (
       <Card className="data-card">
         <CardHeader>
@@ -37,7 +37,7 @@ export function QuickStats() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="text-center text-slate-500">
-            No performance data available
+            No training data available. Please upload historical CSV data to train the model.
           </div>
         </CardContent>
       </Card>

@@ -412,19 +412,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           }
         };
       } else {
-        // Fallback analysis when no historical data
-        analysis = {
-          frequencyData: [23, 31, 28, 19, 25],
-          mostFrequent: 23,
-          leastFrequent: 11,
-          trending: 34,
-          patterns: {
-            oddEvenRatio: "3:2",
-            highLowSplit: "2:3",
-            sumRange: "110-140",
-            sequentialAccuracy: 78
-          }
-        };
+        // No historical data available
+        return res.status(404).json({ message: "No historical data available. Please upload CSV data first." });
       }
       
       res.json(analysis);

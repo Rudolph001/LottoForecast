@@ -79,7 +79,7 @@ export function AdvancedAnalytics() {
           <div className="bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-lg p-4">
             <h4 className="font-medium text-primary dark:text-primary mb-2">Sequential Patterns</h4>
             <div className="text-2xl font-bold text-primary dark:text-primary">
-              {analysis?.patterns?.sequentialAccuracy || 78}%
+              {analysis?.patterns?.sequentialAccuracy || 'N/A'}%
             </div>
             <div className="text-sm text-slate-600 dark:text-slate-400">
               Consecutive number accuracy
@@ -90,11 +90,21 @@ export function AdvancedAnalytics() {
             <div className="flex justify-between items-center">
               <span className="text-sm text-slate-600 dark:text-slate-400">Odd/Even Balance</span>
               <span className="font-mono text-primary dark:text-primary">
-                {analysis?.patterns?.oddEvenRatio || '3:2'}
+                {analysis?.patterns?.oddEvenRatio || 'N/A'}
               </span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm text-slate-600 dark:text-slate-400">High/Low Split</span>
+              <span className="font-mono text-primary dark:text-primary">
+                {analysis?.patterns?.highLowSplit || 'N/A'}
+              </span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-slate-600 dark:text-slate-400">Sum Range</span>
+              <span className="font-mono text-primary dark:text-primary">
+                {analysis?.patterns?.sumRange || 'N/A'}
+              </span>
+            </div>
               <span className="font-mono text-primary dark:text-primary">
                 {analysis?.patterns?.highLowSplit || '2:3'}
               </span>

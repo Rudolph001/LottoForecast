@@ -1,5 +1,5 @@
-import { drizzle } from "drizzle-orm/neon-serverless";
-import { neon, neonConfig } from "@neondatabase/serverless";
+import { drizzle } from "drizzle-orm/neon-http";
+import { neon } from "@neondatabase/serverless";
 import { 
   euroMillionsDraws, 
   predictions, 
@@ -21,9 +21,6 @@ export class DatabaseStorage implements IStorage {
     if (!process.env.DATABASE_URL) {
       throw new Error("DATABASE_URL is required for database storage");
     }
-    
-    // Configure Neon for serverless environments
-    neonConfig.fetchConnectionCache = true;
     
     const sql = neon(process.env.DATABASE_URL);
     this.db = drizzle(sql);

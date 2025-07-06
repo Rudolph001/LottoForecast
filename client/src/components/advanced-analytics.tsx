@@ -24,15 +24,11 @@ export function AdvancedAnalytics() {
   const { data: analysis, isLoading: analysisLoading, error: analysisError } = useQuery({
     queryKey: ["/api/analysis/frequency"],
     queryFn: async () => {
-      console.log('AdvancedAnalytics - Making direct fetch call for analysis');
       const response = await fetch('/api/analysis/frequency');
-      console.log('AdvancedAnalytics - Analysis response status:', response.status);
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}`);
       }
-      const data = await response.json();
-      console.log('AdvancedAnalytics - Analysis data:', data);
-      return data;
+      return await response.json();
     },
     retry: 3,
     refetchOnWindowFocus: false,
@@ -41,15 +37,11 @@ export function AdvancedAnalytics() {
   const { data: performance, isLoading: performanceLoading, error: performanceError } = useQuery({
     queryKey: ["/api/model/performance"],
     queryFn: async () => {
-      console.log('AdvancedAnalytics - Making direct fetch call for performance');
       const response = await fetch('/api/model/performance');
-      console.log('AdvancedAnalytics - Performance response status:', response.status);
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}`);
       }
-      const data = await response.json();
-      console.log('AdvancedAnalytics - Performance data:', data);
-      return data;
+      return await response.json();
     },
     retry: 3,
     refetchOnWindowFocus: false,
@@ -57,13 +49,18 @@ export function AdvancedAnalytics() {
 
   const { data: predictions, isLoading: predictionsLoading } = useQuery({
     queryKey: ["/api/predictions"],
+    queryFn: async () => {
+      const response = await fetch('/api/predictions');
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      return await response.json();
+    },
+    retry: 3,
+    refetchOnWindowFocus: false,
   });
 
-  // Debug logging
-  console.log('AdvancedAnalytics - analysis:', analysis);
-  console.log('AdvancedAnalytics - performance:', performance);
-  console.log('AdvancedAnalytics - analysisError:', analysisError);
-  console.log('AdvancedAnalytics - performanceError:', performanceError);
+
 
   // Generate performance data based on real model data
   const performanceData = performance ? [

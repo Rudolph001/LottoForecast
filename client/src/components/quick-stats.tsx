@@ -5,7 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 export function QuickStats() {
   const { data: performance, isLoading } = useQuery({
     queryKey: ["/api/model/performance"],
-    refetchInterval: 300000, // Refresh every 5 minutes
+    refetchInterval: 30000, // Refresh every 30 seconds to pick up new predictions faster
   });
 
   if (isLoading) {

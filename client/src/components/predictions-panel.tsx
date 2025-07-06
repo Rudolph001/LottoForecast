@@ -32,6 +32,8 @@ export function PredictionsPanel() {
     mutationFn: () => apiRequest("POST", "/api/predictions/generate"),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/predictions/latest"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/predictions"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/model/performance"] });
       toast({
         title: "New Prediction Generated",
         description: "Fresh AI predictions are now available",

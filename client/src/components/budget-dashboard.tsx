@@ -169,6 +169,24 @@ export function BudgetDashboard() {
     return Math.round(monthlyMaintenance);
   };
 
+  const estimateFuelCosts = (make: string, model: string, price: number): number => {
+    const isSportsLuxury = ['Ferrari', 'Lamborghini', 'Porsche', 'McLaren', 'Aston Martin'].some(brand => 
+      make.toLowerCase().includes(brand.toLowerCase())
+    );
+    const isLuxurySUV = ['BMW X', 'Mercedes G', 'Range Rover', 'Bentley', 'Cayenne'].some(model_type => 
+      model.toLowerCase().includes(model_type.toLowerCase())
+    );
+    
+    let monthlyFuel = 3500; // Base monthly fuel for average driving (R3,500)
+    
+    if (isSportsLuxury) monthlyFuel *= 2.5; // Sports cars use much more fuel
+    else if (isLuxurySUV) monthlyFuel *= 1.8; // Luxury SUVs use more fuel
+    else if (price > 1500000) monthlyFuel *= 1.5; // High-end cars generally use more fuel
+    else if (price > 800000) monthlyFuel *= 1.3; // Mid-luxury adjustment
+    
+    return Math.round(monthlyFuel);
+  };
+
   const estimatePropertyInsurance = (type: string, price: number, location: string): number => {
     let baseRate = 0.003; // 0.3% of property value annually
     
@@ -786,7 +804,7 @@ export function BudgetDashboard() {
                     </div>
 
                     {/* Financial Summary Cards */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       {/* Insurance Card */}
                       <div className="bg-gradient-to-br from-red-50 to-orange-50 dark:from-red-950/20 dark:to-orange-950/20 rounded-lg p-4 border border-red-100 dark:border-red-900/20">
                         <div className="flex items-center justify-between mb-3">
@@ -890,27 +908,73 @@ export function BudgetDashboard() {
                           </div>
                         </div>
                       </div>
+
+                      {/* Fuel Card */}
+                      <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20 rounded-lg p-4 border border-green-100 dark:border-green-900/20">
+                        <div className="flex items-center justify-between mb-3">
+                          <h4 className="font-semibold text-green-700 dark:text-green-400 text-sm">Monthly Fuel</h4>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              const estimatedFuel = estimateFuelCosts(vehicle.make, vehicle.model, vehicle.price);
+                              setVehicles(prev => prev.map(v => 
+                                v.id === vehicle.id ? {...v, fuel: estimatedFuel} : v
+                              ));
+                            }}
+                            className="text-xs text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/20 border-green-200 dark:border-green-800 hover:bg-green-200 dark:hover:bg-green-900/40"
+                          >
+                            Auto-Calculate
+                          </Button>
+                        </div>
+                        <div className="space-y-2">
+                          <div className="relative">
+                            <Input
+                              type="number"
+                              value={vehicle.fuel || ''}
+                              onChange={(e) => 
+                                setVehicles(prev => prev.map(v => 
+                                  v.id === vehicle.id ? {...v, fuel: parseFloat(e.target.value) || 0} : v
+                                ))
+                              }
+                              className="pl-8 font-mono text-lg border-green-200 dark:border-green-800"
+                            />
+                            <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-500">R</span>
+                          </div>
+                          <div className="text-xs space-y-1">
+                            <div className="flex justify-between">
+                              <span className="text-slate-600 dark:text-slate-400">Estimated:</span>
+                              <span className="font-semibold text-green-600 dark:text-green-400">
+                                R{estimateFuelCosts(vehicle.make, vehicle.model, vehicle.price).toLocaleString()}
+                              </span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-slate-600 dark:text-slate-400">Annual:</span>
+                              <span className="font-medium">
+                                R{((vehicle.fuel || estimateFuelCosts(vehicle.make, vehicle.model, vehicle.price)) * 12).toLocaleString()}
+                              </span>
+                            </div>
+                            <div className="text-xs text-slate-500 dark:text-slate-400 mt-2 p-2 bg-white/50 dark:bg-black/20 rounded">
+                              Based on average driving patterns for {vehicle.make || 'vehicle'} {vehicle.model || 'type'}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
 
-                    {/* Total Monthly Cost Summary */}
+                    {/* Vehicle Purchase Summary */}
                     <div className="bg-gradient-to-r from-purple-100 to-violet-100 dark:from-purple-900/20 dark:to-violet-900/20 rounded-lg p-4 border border-purple-200 dark:border-purple-800/20">
                       <div className="flex items-center justify-between mb-2">
-                        <h4 className="font-semibold text-purple-700 dark:text-purple-400">Total Monthly Running Costs</h4>
+                        <h4 className="font-semibold text-purple-700 dark:text-purple-400">Vehicle Purchase Summary</h4>
                         <div className="text-right">
                           <div className="text-2xl font-bold text-purple-700 dark:text-purple-400">
-                            R{((vehicle.insurance || 0) + (vehicle.maintenance || 0)).toLocaleString()}
+                            R{(vehicle.price || 0).toLocaleString()}
                           </div>
-                          <div className="text-xs text-slate-600 dark:text-slate-400">
-                            R{(((vehicle.insurance || 0) + (vehicle.maintenance || 0)) * 12).toLocaleString()} annually
-                          </div>
+                          <div className="text-xs text-slate-600 dark:text-slate-400">Purchase price only</div>
                         </div>
                       </div>
                       {/* Vehicle Cost vs Allocation */}
                       <div className="border-t border-purple-200 dark:border-purple-800/20 pt-2 mt-2">
-                        <div className="flex justify-between text-sm">
-                          <span className="text-slate-600 dark:text-slate-400">Vehicle Purchase Price:</span>
-                          <span className="font-semibold">R{(vehicle.price || 0).toLocaleString()}</span>
-                        </div>
                         <div className="flex justify-between text-sm">
                           <span className="text-slate-600 dark:text-slate-400">Total Car Budget Allocated:</span>
                           <span className="font-semibold">R{carsAmount.toLocaleString()}</span>
@@ -924,6 +988,38 @@ export function BudgetDashboard() {
                             {carsAmount - (vehicles.reduce((sum, v) => sum + (v.price || 0), 0)) < 0 ? ' over budget' : ' available'}
                           </span>
                         </div>
+                      </div>
+                    </div>
+
+                    {/* Monthly Running Costs - From Main Account */}
+                    <div className="bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-950/20 dark:to-amber-950/20 rounded-lg p-4 border border-orange-200 dark:border-orange-800/20">
+                      <div className="flex items-center justify-between mb-2">
+                        <h4 className="font-semibold text-orange-700 dark:text-orange-400">Monthly Running Costs</h4>
+                        <div className="text-right">
+                          <div className="text-lg font-bold text-orange-700 dark:text-orange-400">
+                            R{((vehicle.insurance || 0) + (vehicle.maintenance || 0) + (vehicle.fuel || 0)).toLocaleString()}
+                          </div>
+                          <div className="text-xs text-slate-600 dark:text-slate-400">
+                            Paid from main account monthly
+                          </div>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-3 gap-2 text-xs">
+                        <div className="text-center">
+                          <div className="text-slate-600 dark:text-slate-400">Insurance</div>
+                          <div className="font-semibold">R{(vehicle.insurance || 0).toLocaleString()}</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-slate-600 dark:text-slate-400">Maintenance</div>
+                          <div className="font-semibold">R{(vehicle.maintenance || 0).toLocaleString()}</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-slate-600 dark:text-slate-400">Fuel</div>
+                          <div className="font-semibold">R{(vehicle.fuel || 0).toLocaleString()}</div>
+                        </div>
+                      </div>
+                      <div className="text-xs text-slate-500 dark:text-slate-400 mt-2 text-center">
+                        These costs will be deducted from your main account interest income
                       </div>
                     </div>
                   </CardContent>
@@ -1054,27 +1150,59 @@ export function BudgetDashboard() {
                   </div>
                 </div>
                 
-                <div className="bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-indigo-950/20 dark:to-blue-950/20 rounded-lg p-6">
-                  <h4 className="font-semibold text-indigo-700 dark:text-indigo-400 mb-4">Monthly Income Summary</h4>
-                  <div className="space-y-3">
-                    <div className="flex justify-between">
-                      <span className="text-sm">Gross Monthly Interest:</span>
-                      <span className="font-semibold">R{taxCalc.monthlyInterest.toLocaleString(undefined, { maximumFractionDigits: 0 })}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-sm text-red-600">Monthly Tax:</span>
-                      <span className="font-semibold text-red-600">-R{(taxCalc.taxOwed / 12).toLocaleString(undefined, { maximumFractionDigits: 0 })}</span>
-                    </div>
-                    <Separator />
-                    <div className="flex justify-between">
-                      <span className="font-medium">Net Monthly Income:</span>
-                      <span className="font-bold text-indigo-600 text-lg">R{taxCalc.netMonthlyIncome.toLocaleString(undefined, { maximumFractionDigits: 0 })}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-sm">Annual Net Income:</span>
-                      <span className="font-semibold">R{(taxCalc.netMonthlyIncome * 12).toLocaleString(undefined, { maximumFractionDigits: 0 })}</span>
+                <div className="space-y-4">
+                  <div className="bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-indigo-950/20 dark:to-blue-950/20 rounded-lg p-6">
+                    <h4 className="font-semibold text-indigo-700 dark:text-indigo-400 mb-4">Monthly Income Summary</h4>
+                    <div className="space-y-3">
+                      <div className="flex justify-between">
+                        <span className="text-sm">Gross Monthly Interest:</span>
+                        <span className="font-semibold">R{taxCalc.monthlyInterest.toLocaleString(undefined, { maximumFractionDigits: 0 })}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-sm text-red-600">Monthly Tax:</span>
+                        <span className="font-semibold text-red-600">-R{(taxCalc.taxOwed / 12).toLocaleString(undefined, { maximumFractionDigits: 0 })}</span>
+                      </div>
+                      <Separator />
+                      <div className="flex justify-between">
+                        <span className="font-medium">Net Monthly Income:</span>
+                        <span className="font-bold text-indigo-600 text-lg">R{taxCalc.netMonthlyIncome.toLocaleString(undefined, { maximumFractionDigits: 0 })}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-sm">Annual Net Income:</span>
+                        <span className="font-semibold">R{(taxCalc.netMonthlyIncome * 12).toLocaleString(undefined, { maximumFractionDigits: 0 })}</span>
+                      </div>
                     </div>
                   </div>
+
+                  {/* Vehicle Running Costs - Paid from Main Account */}
+                  {vehicles.length > 0 && (
+                    <div className="bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-950/20 dark:to-amber-950/20 rounded-lg p-6">
+                      <h4 className="font-semibold text-orange-700 dark:text-orange-400 mb-4">Monthly Vehicle Running Costs</h4>
+                      <div className="space-y-2">
+                        {vehicles.map((vehicle, index) => (
+                          <div key={vehicle.id} className="flex justify-between text-sm">
+                            <span>{vehicle.make} {vehicle.model} ({vehicle.year}):</span>
+                            <span className="font-medium text-orange-600 dark:text-orange-400">
+                              -R{((vehicle.insurance || 0) + (vehicle.maintenance || 0) + (vehicle.fuel || 0)).toLocaleString()}
+                            </span>
+                          </div>
+                        ))}
+                        <Separator />
+                        <div className="flex justify-between font-semibold">
+                          <span>Total Vehicle Costs:</span>
+                          <span className="text-orange-600 dark:text-orange-400">
+                            -R{vehicles.reduce((sum, v) => sum + (v.insurance || 0) + (v.maintenance || 0) + (v.fuel || 0), 0).toLocaleString()}
+                          </span>
+                        </div>
+                        <div className="flex justify-between font-bold text-lg pt-2 border-t">
+                          <span>Available Monthly Income:</span>
+                          <span className={`${taxCalc.netMonthlyIncome - vehicles.reduce((sum, v) => sum + (v.insurance || 0) + (v.maintenance || 0) + (v.fuel || 0), 0) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                            R{(taxCalc.netMonthlyIncome - vehicles.reduce((sum, v) => sum + (v.insurance || 0) + (v.maintenance || 0) + (v.fuel || 0), 0)).toLocaleString()}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </CardContent>

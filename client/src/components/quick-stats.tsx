@@ -27,7 +27,24 @@ export function QuickStats() {
     );
   }
 
-  if (!performance || performance.trainingData === 0) {
+  if (!performance) {
+    return (
+      <Card className="data-card">
+        <CardHeader>
+          <CardTitle className="text-lg font-semibold text-primary dark:text-primary">
+            AI Model Performance
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="text-center text-slate-500">
+            Loading model performance...
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (performance.trainingData === 0) {
     return (
       <Card className="data-card">
         <CardHeader>

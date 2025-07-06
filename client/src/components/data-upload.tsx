@@ -43,7 +43,12 @@ export function DataUpload() {
         title: "Upload Successful",
         description: `Processed ${data.recordsProcessed} records`,
       });
+      // Invalidate all queries that depend on uploaded data
       queryClient.invalidateQueries({ queryKey: ['/api/draws'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/analysis/frequency'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/model/performance'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/predictions/latest'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/predictions'] });
     },
     onError: () => {
       toast({

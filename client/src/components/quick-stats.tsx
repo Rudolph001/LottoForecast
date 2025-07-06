@@ -5,6 +5,17 @@ import { Skeleton } from "@/components/ui/skeleton";
 export function QuickStats() {
   const { data: performance, isLoading, error } = useQuery({
     queryKey: ["/api/model/performance"],
+    queryFn: async () => {
+      console.log('QuickStats - Making direct fetch call');
+      const response = await fetch('/api/model/performance');
+      console.log('QuickStats - Response status:', response.status);
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      const data = await response.json();
+      console.log('QuickStats - Response data:', data);
+      return data;
+    },
     refetchInterval: 30000,
     retry: 3,
     refetchOnWindowFocus: false,

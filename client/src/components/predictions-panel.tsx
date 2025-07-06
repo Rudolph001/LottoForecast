@@ -78,6 +78,17 @@ export function PredictionsPanel() {
 
   const { data: analysis, isLoading: analysisLoading, error: analysisError } = useQuery({
     queryKey: ["/api/analysis/frequency"],
+    queryFn: async () => {
+      console.log('PredictionsPanel - Making direct fetch call');
+      const response = await fetch('/api/analysis/frequency');
+      console.log('PredictionsPanel - Response status:', response.status);
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      const data = await response.json();
+      console.log('PredictionsPanel - Response data:', data);
+      return data;
+    },
     retry: 3,
     refetchOnWindowFocus: false,
   });

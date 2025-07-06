@@ -1,21 +1,14 @@
-
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { 
   Calculator, 
   Home, 
   Car, 
-  PiggyBank, 
   TrendingUp, 
   Banknote,
-  Receipt,
-  Wallet,
-  Building2,
   ShoppingBag
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
@@ -35,6 +28,13 @@ interface TaxCalculation {
   netMonthlyIncome: number;
 }
 
+interface ExchangeRateData {
+  from: string;
+  to: string;
+  rate: number;
+  lastUpdated: string;
+}
+
 export function BudgetDashboard() {
   const [jackpotAmount, setJackpotAmount] = useState<string>("74000000");
   const [interestRate, setInterestRate] = useState<string>("10.5");
@@ -45,7 +45,7 @@ export function BudgetDashboard() {
     otherExpenses: 5
   });
 
-  const { data: exchangeRate } = useQuery({
+  const { data: exchangeRate } = useQuery<ExchangeRateData>({
     queryKey: ["/api/exchange-rate"],
     refetchInterval: 60000,
   });
@@ -164,290 +164,217 @@ export function BudgetDashboard() {
         </CardContent>
       </Card>
 
-      {/* Budget Allocation */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="data-card">
-          <CardHeader>
-            <CardTitle className="text-lg font-semibold text-primary dark:text-primary">
-              Budget Allocation (%)
+      {/* Individual Budget Categories */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6">
+        {/* Fixed Deposit Card */}
+        <Card className="data-card bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg font-semibold text-green-700 dark:text-green-400 flex items-center">
+              <TrendingUp className="w-5 h-5 mr-2" />
+              Fixed Deposit
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="investec">Investec Fixed Deposit</Label>
-                <div className="flex items-center space-x-2">
-                  <Input
-                    id="investec"
-                    type="number"
-                    value={allocation.investecFixedDeposit}
-                    onChange={(e) => handleAllocationChange('investecFixedDeposit', e.target.value)}
-                    className="font-mono"
-                    min="0"
-                    max="100"
-                  />
-                  <span className="text-slate-500">%</span>
-                </div>
-              </div>
-              
-              <div>
-                <Label htmlFor="houses">Houses/Property</Label>
-                <div className="flex items-center space-x-2">
-                  <Input
-                    id="houses"
-                    type="number"
-                    value={allocation.houses}
-                    onChange={(e) => handleAllocationChange('houses', e.target.value)}
-                    className="font-mono"
-                    min="0"
-                    max="100"
-                  />
-                  <span className="text-slate-500">%</span>
-                </div>
-              </div>
-              
-              <div>
-                <Label htmlFor="cars">Cars/Vehicles</Label>
-                <div className="flex items-center space-x-2">
-                  <Input
-                    id="cars"
-                    type="number"
-                    value={allocation.cars}
-                    onChange={(e) => handleAllocationChange('cars', e.target.value)}
-                    className="font-mono"
-                    min="0"
-                    max="100"
-                  />
-                  <span className="text-slate-500">%</span>
-                </div>
-              </div>
-              
-              <div>
-                <Label htmlFor="other">Other Expenses</Label>
-                <div className="flex items-center space-x-2">
-                  <Input
-                    id="other"
-                    type="number"
-                    value={allocation.otherExpenses}
-                    onChange={(e) => handleAllocationChange('otherExpenses', e.target.value)}
-                    className="font-mono"
-                    min="0"
-                    max="100"
-                  />
-                  <span className="text-slate-500">%</span>
-                </div>
+          <CardContent className="space-y-3">
+            <div>
+              <Label htmlFor="investec-percent" className="text-sm">Percentage</Label>
+              <div className="flex items-center space-x-2">
+                <Input
+                  id="investec-percent"
+                  type="number"
+                  value={allocation.investecFixedDeposit}
+                  onChange={(e) => handleAllocationChange('investecFixedDeposit', e.target.value)}
+                  className="font-mono"
+                  min="0"
+                  max="100"
+                />
+                <span className="text-slate-500 dark:text-slate-400">%</span>
               </div>
             </div>
-
-            <Separator />
-
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm font-medium">
-                <span>Total Allocation:</span>
-                <span className={totalAllocation === 100 ? "text-green-600" : "text-red-600"}>
-                  {totalAllocation}%
-                </span>
+            
+            <div className="bg-white/50 dark:bg-black/20 rounded-lg p-3">
+              <div className="text-2xl font-bold text-green-700 dark:text-green-400">
+                R{investmentAmount.toLocaleString(undefined, { maximumFractionDigits: 0 })}
               </div>
-              {totalAllocation !== 100 && (
-                <div className="text-sm text-amber-600 dark:text-amber-400">
-                  ⚠️ Allocation must total 100%
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Investment Details */}
-        <Card className="data-card">
-          <CardHeader>
-            <CardTitle className="text-lg font-semibold text-primary dark:text-primary flex items-center">
-              <PiggyBank className="w-5 h-5 mr-2" />
-              Investment Analysis
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-lg p-4">
-              <h4 className="font-medium text-green-800 dark:text-green-200 mb-3">Investec Fixed Deposit</h4>
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-sm">Principal Amount:</span>
-                  <span className="font-mono font-bold">R{investmentAmount.toLocaleString(undefined, { maximumFractionDigits: 0 })}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm">Interest Rate:</span>
-                  <span className="font-mono">{rate}% p.a.</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm">Monthly Interest (Gross):</span>
-                  <span className="font-mono font-bold text-green-600">R{taxCalc.monthlyInterest.toLocaleString(undefined, { maximumFractionDigits: 0 })}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm">Annual Interest (Gross):</span>
-                  <span className="font-mono">R{taxCalc.annualInterest.toLocaleString(undefined, { maximumFractionDigits: 0 })}</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20 rounded-lg p-4">
-              <h4 className="font-medium text-red-800 dark:text-red-200 mb-3">South African Tax (2024/25)</h4>
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-sm">Taxable Income:</span>
-                  <span className="font-mono">R{taxCalc.taxableAmount.toLocaleString(undefined, { maximumFractionDigits: 0 })}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm">Annual Tax Owed:</span>
-                  <span className="font-mono font-bold text-red-600">R{taxCalc.taxOwed.toLocaleString(undefined, { maximumFractionDigits: 0 })}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm">Monthly Tax:</span>
-                  <span className="font-mono">R{(taxCalc.taxOwed / 12).toLocaleString(undefined, { maximumFractionDigits: 0 })}</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg p-4">
-              <h4 className="font-medium text-blue-800 dark:text-blue-200 mb-3">Net Monthly Income</h4>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">
-                  R{taxCalc.netMonthlyIncome.toLocaleString(undefined, { maximumFractionDigits: 0 })}
-                </div>
-                <div className="text-sm text-slate-600 dark:text-slate-400">After Tax Monthly Income</div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Expense Breakdown */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
-        <Card className="data-card">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Fixed Deposit</p>
-                <p className="text-2xl font-bold text-green-600">
-                  R{investmentAmount.toLocaleString(undefined, { maximumFractionDigits: 0 })}
-                </p>
-              </div>
-              <div className="p-3 rounded-full bg-green-100 text-green-600 dark:bg-green-900/20">
-                <TrendingUp className="h-6 w-6" />
-              </div>
-            </div>
-            <div className="mt-4">
-              <p className="text-sm text-slate-600 dark:text-slate-400">
+              <div className="text-xs text-slate-600 dark:text-slate-400">
                 {allocation.investecFixedDeposit}% of jackpot
-              </p>
+              </div>
+            </div>
+            
+            <div className="text-xs space-y-1">
+              <div className="flex justify-between">
+                <span className="text-slate-600 dark:text-slate-400">Monthly Interest:</span>
+                <span className="font-semibold">R{taxCalc.monthlyInterest.toLocaleString(undefined, { maximumFractionDigits: 0 })}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-600 dark:text-slate-400">After Tax:</span>
+                <span className="font-semibold text-green-600">R{taxCalc.netMonthlyIncome.toLocaleString(undefined, { maximumFractionDigits: 0 })}</span>
+              </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="data-card">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Houses/Property</p>
-                <p className="text-2xl font-bold text-blue-600">
-                  R{housesAmount.toLocaleString(undefined, { maximumFractionDigits: 0 })}
-                </p>
-              </div>
-              <div className="p-3 rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900/20">
-                <Home className="h-6 w-6" />
+        {/* Houses/Property Card */}
+        <Card className="data-card bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg font-semibold text-blue-700 dark:text-blue-400 flex items-center">
+              <Home className="w-5 h-5 mr-2" />
+              Houses/Property
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div>
+              <Label htmlFor="houses-percent" className="text-sm">Percentage</Label>
+              <div className="flex items-center space-x-2">
+                <Input
+                  id="houses-percent"
+                  type="number"
+                  value={allocation.houses}
+                  onChange={(e) => handleAllocationChange('houses', e.target.value)}
+                  className="font-mono"
+                  min="0"
+                  max="100"
+                />
+                <span className="text-slate-500 dark:text-slate-400">%</span>
               </div>
             </div>
-            <div className="mt-4">
-              <p className="text-sm text-slate-600 dark:text-slate-400">
+            
+            <div className="bg-white/50 dark:bg-black/20 rounded-lg p-3">
+              <div className="text-2xl font-bold text-blue-700 dark:text-blue-400">
+                R{housesAmount.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+              </div>
+              <div className="text-xs text-slate-600 dark:text-slate-400">
                 {allocation.houses}% of jackpot
-              </p>
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="property-details" className="text-xs">Property Details</Label>
+              <Input
+                id="property-details"
+                placeholder="e.g., 3 bedroom house, Cape Town"
+                className="text-xs"
+              />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="data-card">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Cars/Vehicles</p>
-                <p className="text-2xl font-bold text-purple-600">
-                  R{carsAmount.toLocaleString(undefined, { maximumFractionDigits: 0 })}
-                </p>
-              </div>
-              <div className="p-3 rounded-full bg-purple-100 text-purple-600 dark:bg-purple-900/20">
-                <Car className="h-6 w-6" />
+        {/* Cars/Vehicles Card */}
+        <Card className="data-card bg-gradient-to-br from-purple-50 to-violet-50 dark:from-purple-950/20 dark:to-violet-950/20">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg font-semibold text-purple-700 dark:text-purple-400 flex items-center">
+              <Car className="w-5 h-5 mr-2" />
+              Cars/Vehicles
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div>
+              <Label htmlFor="cars-percent" className="text-sm">Percentage</Label>
+              <div className="flex items-center space-x-2">
+                <Input
+                  id="cars-percent"
+                  type="number"
+                  value={allocation.cars}
+                  onChange={(e) => handleAllocationChange('cars', e.target.value)}
+                  className="font-mono"
+                  min="0"
+                  max="100"
+                />
+                <span className="text-slate-500 dark:text-slate-400">%</span>
               </div>
             </div>
-            <div className="mt-4">
-              <p className="text-sm text-slate-600 dark:text-slate-400">
+            
+            <div className="bg-white/50 dark:bg-black/20 rounded-lg p-3">
+              <div className="text-2xl font-bold text-purple-700 dark:text-purple-400">
+                R{carsAmount.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+              </div>
+              <div className="text-xs text-slate-600 dark:text-slate-400">
                 {allocation.cars}% of jackpot
-              </p>
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="car-details" className="text-xs">Vehicle Details</Label>
+              <Input
+                id="car-details"
+                placeholder="e.g., BMW X5, Mercedes C-Class"
+                className="text-xs"
+              />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="data-card">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Other Expenses</p>
-                <p className="text-2xl font-bold text-orange-600">
-                  R{otherAmount.toLocaleString(undefined, { maximumFractionDigits: 0 })}
-                </p>
-              </div>
-              <div className="p-3 rounded-full bg-orange-100 text-orange-600 dark:bg-orange-900/20">
-                <ShoppingBag className="h-6 w-6" />
+        {/* Other Expenses Card */}
+        <Card className="data-card bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-950/20 dark:to-red-950/20">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg font-semibold text-orange-700 dark:text-orange-400 flex items-center">
+              <ShoppingBag className="w-5 h-5 mr-2" />
+              Other Expenses
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div>
+              <Label htmlFor="other-percent" className="text-sm">Percentage</Label>
+              <div className="flex items-center space-x-2">
+                <Input
+                  id="other-percent"
+                  type="number"
+                  value={allocation.otherExpenses}
+                  onChange={(e) => handleAllocationChange('otherExpenses', e.target.value)}
+                  className="font-mono"
+                  min="0"
+                  max="100"
+                />
+                <span className="text-slate-500 dark:text-slate-400">%</span>
               </div>
             </div>
-            <div className="mt-4">
-              <p className="text-sm text-slate-600 dark:text-slate-400">
+            
+            <div className="bg-white/50 dark:bg-black/20 rounded-lg p-3">
+              <div className="text-2xl font-bold text-orange-700 dark:text-orange-400">
+                R{otherAmount.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+              </div>
+              <div className="text-xs text-slate-600 dark:text-slate-400">
                 {allocation.otherExpenses}% of jackpot
-              </p>
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="other-details" className="text-xs">Expense Details</Label>
+              <Input
+                id="other-details"
+                placeholder="e.g., Travel, Charity, Family"
+                className="text-xs"
+              />
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Financial Summary */}
+      {/* Allocation Summary */}
       <Card className="data-card">
         <CardHeader>
-          <CardTitle className="text-lg font-semibold text-primary dark:text-primary flex items-center">
-            <Receipt className="w-5 h-5 mr-2" />
-            Financial Summary
+          <CardTitle className="text-lg font-semibold text-primary dark:text-primary flex items-center justify-between">
+            <span className="flex items-center">
+              <Calculator className="w-5 h-5 mr-2" />
+              Allocation Summary
+            </span>
+            <Badge variant={totalAllocation === 100 ? "default" : "destructive"} className="px-3 py-1">
+              {totalAllocation}% Total
+            </Badge>
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="text-center p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
-              <div className="text-2xl font-bold text-primary dark:text-primary">
-                R{jackpotZAR.toLocaleString(undefined, { maximumFractionDigits: 0 })}
-              </div>
-              <div className="text-sm text-slate-600 dark:text-slate-400">Total Jackpot (ZAR)</div>
+          <div className="space-y-2">
+            <div className="flex justify-between text-sm font-medium">
+              <span>Total Allocation:</span>
+              <span className={totalAllocation === 100 ? "text-green-600" : "text-red-600"}>
+                {totalAllocation}%
+              </span>
             </div>
-            
-            <div className="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
-              <div className="text-2xl font-bold text-green-600">
-                R{taxCalc.netMonthlyIncome.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+            {totalAllocation !== 100 && (
+              <div className="text-sm text-amber-600 dark:text-amber-400">
+                ⚠️ Allocation must total 100%
               </div>
-              <div className="text-sm text-slate-600 dark:text-slate-400">Monthly Income (After Tax)</div>
-            </div>
-            
-            <div className="text-center p-4 bg-red-50 dark:bg-red-900/20 rounded-lg">
-              <div className="text-2xl font-bold text-red-600">
-                R{taxCalc.taxOwed.toLocaleString(undefined, { maximumFractionDigits: 0 })}
-              </div>
-              <div className="text-sm text-slate-600 dark:text-slate-400">Annual Tax Liability</div>
-            </div>
-          </div>
-
-          <Separator className="my-6" />
-
-          <div className="text-center">
-            <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">
-              Based on South African tax rates for 2024/25 tax year
-            </p>
-            <Badge variant="outline" className="px-3 py-1">
-              <Building2 className="h-4 w-4 mr-2" />
-              SARS Compliant Calculations
-            </Badge>
+            )}
           </div>
         </CardContent>
       </Card>

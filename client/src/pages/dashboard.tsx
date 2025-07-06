@@ -1,15 +1,44 @@
+import { useState, useEffect } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { JackpotBanner } from "@/components/jackpot-banner";
-import { DataUpload } from "@/components/data-upload";
-import { CurrencyConverter } from "@/components/currency-converter";
 import { QuickStats } from "@/components/quick-stats";
 import { PredictionsPanel } from "@/components/predictions-panel";
 import { AdvancedAnalytics } from "@/components/advanced-analytics";
-import { Button } from "@/components/ui/button";
+import { DataUpload } from "@/components/data-upload";
+import { CurrencyConverter } from "@/components/currency-converter";
+import { Sparkles, TrendingUp, Calculator, Upload } from "lucide-react";
+import { useLocation } from "wouter";
 import { useTheme } from "@/components/theme-provider";
 import { Moon, Sun, Menu } from "lucide-react";
 
-export default function Dashboard() {
+export function Dashboard() {
+  const [location, setLocation] = useLocation();
+  const [activeTab, setActiveTab] = useState("dashboard");
   const { theme, setTheme } = useTheme();
+
+  // Update activeTab based on current route
+  useEffect(() => {
+    if (location === "/" || location === "/dashboard") {
+      setActiveTab("dashboard");
+    } else if (location === "/predictions") {
+      setActiveTab("predictions");
+    } else if (location === "/analysis") {
+      setActiveTab("analysis");
+    } else if (location === "/converter") {
+      setActiveTab("converter");
+    }
+  }, [location]);
+
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+    if (tab === "dashboard") {
+      setLocation("/");
+    } else {
+      setLocation(`/${tab}`);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -28,12 +57,36 @@ export default function Dashboard() {
                 </div>
               </div>
             </div>
-            <nav className="hidden md:flex items-center space-x-6">
-              <a href="#dashboard" className="text-primary font-medium border-b-2 border-primary pb-1">Dashboard</a>
-              <a href="#predictions" className="text-slate-600 dark:text-slate-400 hover:text-primary transition-colors">Predictions</a>
-              <a href="#analysis" className="text-slate-600 dark:text-slate-400 hover:text-primary transition-colors">Analysis</a>
-              <a href="#converter" className="text-slate-600 dark:text-slate-400 hover:text-primary transition-colors">Converter</a>
-            </nav>
+             <nav className="hidden md:flex items-center space-x-6">
+                <Button
+                  variant={activeTab === "dashboard" ? "default" : "ghost"}
+                  onClick={() => handleTabChange("dashboard")}
+                  className="flex items-center space-x-2 px-6 py-2"
+                >
+                  <span>Dashboard</span>
+                </Button>
+                <Button
+                  variant={activeTab === "predictions" ? "default" : "ghost"}
+                  onClick={() => handleTabChange("predictions")}
+                  className="flex items-center space-x-2 px-6 py-2"
+                >
+                  <span>Predictions</span>
+                </Button>
+                <Button
+                  variant={activeTab === "analysis" ? "default" : "ghost"}
+                  onClick={() => handleTabChange("analysis")}
+                  className="flex items-center space-x-2 px-6 py-2"
+                >
+                  <span>Analysis</span>
+                </Button>
+                <Button
+                  variant={activeTab === "converter" ? "default" : "ghost"}
+                  onClick={() => handleTabChange("converter")}
+                  className="flex items-center space-x-2 px-6 py-2"
+                >
+                  <span>Converter</span>
+                </Button>
+              </nav>
             <div className="flex items-center space-x-4">
               <Button
                 variant="ghost"
@@ -53,7 +106,7 @@ export default function Dashboard() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        
+
         {/* Current Jackpot Banner */}
         <JackpotBanner />
 
@@ -98,7 +151,7 @@ export default function Dashboard() {
                 </div>
               </div>
             </div>
-            
+
             <div>
               <h4 className="font-semibold text-slate-900 dark:text-slate-100 mb-3">Features</h4>
               <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
@@ -108,7 +161,7 @@ export default function Dashboard() {
                 <li>Historical Data</li>
               </ul>
             </div>
-            
+
             <div>
               <h4 className="font-semibold text-slate-900 dark:text-slate-100 mb-3">Support</h4>
               <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
@@ -119,7 +172,7 @@ export default function Dashboard() {
               </ul>
             </div>
           </div>
-          
+
           <div className="border-t border-border mt-8 pt-8 flex flex-col sm:flex-row justify-between items-center">
             <p className="text-sm text-slate-500 dark:text-slate-500">
               © 2025 EuroMillions AI Predictor. For entertainment purposes only.

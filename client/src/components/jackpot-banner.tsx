@@ -38,7 +38,7 @@ export function JackpotBanner() {
     'Friday, July 11, 2025';
 
   return (
-    <div className="bg-gradient-to-r from-gold to-yellow-500 dark:from-gold dark:to-yellow-600 rounded-xl p-6 mb-8 text-white relative overflow-hidden">
+    <div className="bg-gradient-to-r from-blue-900 via-blue-800 to-yellow-600 rounded-xl p-6 mb-8 text-white relative overflow-hidden">
       <div className="absolute inset-0 bg-black dark:bg-black opacity-10 dark:opacity-20"></div>
       <div className="relative z-10">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">

@@ -44,17 +44,14 @@ export function DataUpload() {
         description: `Processed ${data.recordsProcessed} records`,
       });
       // Invalidate all queries that depend on uploaded data
-      queryClient.invalidateQueries({ queryKey: ['/api/draws'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/analysis/frequency'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/model/performance'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/predictions/latest'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/predictions'] });
-      // Clear all cache and force refetch
-      queryClient.clear();
-      // Force page reload to ensure fresh data
-      setTimeout(() => {
-        window.location.reload();
-      }, 1000);
+      queryClient.invalidateQueries({ queryKey: ["/api/draws"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/analysis/frequency"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/model/performance"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/predictions/latest"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/predictions"] });
+      // Force immediate refetch of all queries
+      queryClient.refetchQueries({ queryKey: ["/api/analysis/frequency"] });
+      queryClient.refetchQueries({ queryKey: ["/api/model/performance"] });
       queryClient.invalidateQueries({ queryKey: ['/api/predictions'] });
     },
     onError: () => {

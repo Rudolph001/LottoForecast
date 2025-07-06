@@ -3,10 +3,17 @@ import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export function QuickStats() {
-  const { data: performance, isLoading } = useQuery({
+  const { data: performance, isLoading, error } = useQuery({
     queryKey: ["/api/model/performance"],
-    refetchInterval: 30000, // Refresh every 30 seconds to pick up new predictions faster
+    refetchInterval: 30000,
+    retry: 3,
+    refetchOnWindowFocus: false,
   });
+
+  // Debug logging
+  console.log('QuickStats - performance:', performance);
+  console.log('QuickStats - isLoading:', isLoading);
+  console.log('QuickStats - error:', error);
 
   if (isLoading) {
     return (

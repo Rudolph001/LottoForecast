@@ -76,8 +76,10 @@ export function PredictionsPanel() {
     queryKey: ["/api/predictions/latest"],
   });
 
-  const { data: analysis, isLoading: analysisLoading } = useQuery({
+  const { data: analysis, isLoading: analysisLoading, error: analysisError } = useQuery({
     queryKey: ["/api/analysis/frequency"],
+    retry: 3,
+    refetchOnWindowFocus: false,
   });
 
   const generateMutation = useMutation({

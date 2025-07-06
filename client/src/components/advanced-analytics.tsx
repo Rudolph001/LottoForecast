@@ -21,17 +21,27 @@ export function AdvancedAnalytics() {
   const [open, setOpen] = useState(false);
   const [selectedPrediction, setSelectedPrediction] = useState(null);
 
-  const { data: analysis, isLoading: analysisLoading } = useQuery({
+  const { data: analysis, isLoading: analysisLoading, error: analysisError } = useQuery({
     queryKey: ["/api/analysis/frequency"],
+    retry: 3,
+    refetchOnWindowFocus: false,
   });
 
-  const { data: performance, isLoading: performanceLoading } = useQuery({
+  const { data: performance, isLoading: performanceLoading, error: performanceError } = useQuery({
     queryKey: ["/api/model/performance"],
+    retry: 3,
+    refetchOnWindowFocus: false,
   });
 
   const { data: predictions, isLoading: predictionsLoading } = useQuery({
     queryKey: ["/api/predictions"],
   });
+
+  // Debug logging
+  console.log('AdvancedAnalytics - analysis:', analysis);
+  console.log('AdvancedAnalytics - performance:', performance);
+  console.log('AdvancedAnalytics - analysisError:', analysisError);
+  console.log('AdvancedAnalytics - performanceError:', performanceError);
 
   // Generate performance data based on real model data
   const performanceData = performance ? [

@@ -1,9 +1,10 @@
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useState } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { 
   ResponsiveContainer, 
   LineChart, 
@@ -17,6 +18,8 @@ import {
 
 export function AdvancedAnalytics() {
   const [showAllPredictions, setShowAllPredictions] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [selectedPrediction, setSelectedPrediction] = useState(null);
 
   const { data: analysis, isLoading: analysisLoading } = useQuery({
     queryKey: ["/api/analysis/frequency"],
@@ -43,10 +46,13 @@ export function AdvancedAnalytics() {
     const predDate = new Date(pred.createdAt);
     const matchCount = Math.floor(Math.random() * 5) + 1; // Would be calculated based on actual results
     return {
+      id: pred.id, // added unique id to prediction
       date: predDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
       drawNumber: `#${1850 + index}`,
       matches: `${matchCount}/5`,
-      accuracy: pred.confidenceScore > 85 ? 'very-high' : pred.confidenceScore > 70 ? 'high' : pred.confidenceScore > 55 ? 'medium' : 'low'
+      accuracy: pred.confidenceScore > 85 ? 'very-high' : pred.confidenceScore > 70 ? 'high' : pred.confidenceScore > 55 ? 'medium' : 'low',
+      predictedNumbers: [1, 3, 5, 7, 9], //mock data
+      actualNumbers: [2, 4, 6, 8, 10], //mock data
     };
   }) : [];
 
@@ -59,7 +65,12 @@ export function AdvancedAnalytics() {
     return 'outline'; // Red for medium/low
   };
 
-  if (analysisLoading || performanceLoading) {
+  const handlePredictionClick = (prediction: any) => {
+    setSelectedPrediction(prediction);
+    setOpen(true);
+  };
+
+  if (analysisLoading || performanceLoading || predictionsLoading) {
     return (
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {[1, 2, 3].map((i) => (
@@ -78,7 +89,6 @@ export function AdvancedAnalytics() {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      
       {/* Pattern Recognition */}
       <Card className="data-card">
         <CardHeader>
@@ -98,7 +108,7 @@ export function AdvancedAnalytics() {
                   Consecutive number accuracy
                 </div>
               </div>
-              
+
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-slate-600 dark:text-slate-400">Odd/Even Balance</span>
@@ -169,7 +179,7 @@ export function AdvancedAnalytics() {
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
-              
+
               <div className="grid grid-cols-2 gap-3 text-center">
                 <div className="bg-secondary/10 dark:bg-secondary/20 rounded-lg p-3">
                   <div className="text-lg font-bold text-secondary">
@@ -208,7 +218,8 @@ export function AdvancedAnalytics() {
                 {displayedPredictions.map((prediction, index) => (
                   <div 
                     key={index}
-                    className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800 rounded-lg"
+                    className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer"
+                    onClick={() => handlePredictionClick(prediction)}
                   >
                     <div>
                       <div className="text-sm font-medium text-slate-900 dark:text-slate-100">
@@ -227,7 +238,7 @@ export function AdvancedAnalytics() {
                   </div>
                 ))}
               </div>
-              
+
               <Button 
                 variant="outline" 
                 className="w-full mt-4"
@@ -243,6 +254,28 @@ export function AdvancedAnalytics() {
               <p className="text-sm">Generate predictions to see results</p>
             </div>
           )}
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Prediction Details</DialogTitle>
+              </DialogHeader>
+              {selectedPrediction && (
+                <>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">Predicted Numbers:</h4>
+                      <p className="text-gray-900 dark:text-gray-100">{selectedPrediction.predictedNumbers.join(', ')}</p>
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">Actual Numbers:</h4>
+                      <p className="text-gray-900 dark:text-gray-100">{selectedPrediction.actualNumbers.join(', ')}</p>
+                    </div>
+                  </div>
+                  <Button variant="outline" className="w-full mt-4" size="sm" onClick={() => setOpen(false)}>Close</Button>
+                </>
+              )}
+            </DialogContent>
+          </Dialog>
         </CardContent>
       </Card>
     </div>
